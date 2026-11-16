@@ -66,7 +66,7 @@ Open the menu-bar icon → **Settings…** to choose what SuperCopy keeps and wh
 | Take a break from capture | Choose **Pause history** in the menu bar |
 | Reduce motion or transparency | Use macOS **Accessibility → Display**; SuperCopy follows both settings |
 
-The app labels storage in GB and uses binary GiB budgets. The dark palette and ⌘V shortcut are fixed in this version. [Read the customization guide](docs/CUSTOMIZATION.md) for exclusion examples, storage behavior, and build options.
+The app labels storage in GB and uses binary GiB budgets. Settings also shows the app version and build number. The dark palette and ⌘V shortcut are fixed in this version. [Read the customization guide](docs/CUSTOMIZATION.md) for exclusion examples, storage behavior, and build options.
 
 ## Install
 
@@ -78,7 +78,9 @@ Requires **macOS 14 or later**. Universal DMGs contain Apple Silicon and Intel b
 
 SuperCopy lives in the menu bar, with no Dock icon. Launch at login stays optional. Permission changes are detected automatically.
 
-Successful [CI runs](https://github.com/desenyon/SuperCopy/actions/workflows/ci.yml) attach development DMGs and SHA-256 checksums; downloading workflow artifacts requires GitHub sign-in. These builds are ad-hoc signed and not notarized. Public downloads still need Developer ID signing, notarization, and clean-machine checks. [Distribution guide](docs/RELEASING.md).
+Download the development DMG and SHA-256 checksum from [GitHub Releases](https://github.com/desenyon/SuperCopy/releases). These initial downloads are development builds and are not notarized. Standard Gatekeeper distribution still needs Developer ID signing, notarization, and clean-machine checks. [Get a signing certificate](docs/RELEASING.md#get-a-developer-id-signing-identity).
+
+Successful [CI runs](https://github.com/desenyon/SuperCopy/actions/workflows/ci.yml) also attach development DMGs; workflow artifact downloads require GitHub sign-in.
 
 To build and install locally with a Swift 6 toolchain:
 
@@ -150,12 +152,11 @@ The DMG and its SHA-256 file appear in `dist/`. It includes a custom black insta
 <summary><strong>Reproduce the screenshots</strong></summary>
 
 ```sh
-swift build
-bin_dir=$(swift build --show-bin-path)
-"$bin_dir/SuperCopy" --render-fixtures /tmp/SuperCopy-screenshots
+./scripts/build.sh
+dist/SuperCopy.app/Contents/MacOS/SuperCopy --render-fixtures /tmp/SuperCopy-screenshots
 ```
 
-This writes clipboard, search, and Settings PNGs using sample content. It does not show windows, read your clipboard, or take focus. Offscreen mode disables animations and uses an opaque background.
+This writes clipboard, search, and Settings PNGs using sample content. Rendering the built bundle includes its actual version in Settings. It does not show windows, read your clipboard, or take focus. Offscreen mode disables animations and uses an opaque background.
 
 </details>
 
