@@ -73,3 +73,11 @@ Direct DMG distribution replaces the proposed App Store route. `scripts/package-
 The installer background was rendered and inspected; the full Finder window was not opened, preserving the no-desktop-interruption requirement. Notarization, Developer ID signing, and quarantined clean-machine Gatekeeper checks were not performed. The optional `--notarize` path requires the distributor's credentials and remains unexercised here.
 
 The first GitHub universal build exposed an Xcode `@main`/`main.swift` naming conflict in the diagnostics target. Renaming that entry point to `Diagnostics.swift` resolves the conflicting file convention. This is separate from app behavior; the local universal build passed after the rename.
+
+## Release 0.0.1 · November 16, 2026
+
+The first tagged release uses version **0.0.1**, build **3**. Settings now derives and displays `Version 0.0.1 (3)` from the app bundle; a bare Swift development executable without bundle metadata displays `Development build`. The updated Settings image was rendered from the packaged app and visually inspected.
+
+Fresh validation: 23 unit tests passed, all 61 offscreen app assertions passed in both the debug and packaged release executables, and the universal DMG passed compressed-image integrity, read-only mount, executable comparison, and signature checks. A copy taken from the DMG was checked for matching version/build metadata and both CPU slices.
+
+The download uses the local `SuperCopy Local Signing` development certificate and has **not** been Apple Developer ID signed or notarized. It is published as a GitHub development prerelease. This does not establish clean-machine Gatekeeper acceptance or new live external-text-field coverage.
