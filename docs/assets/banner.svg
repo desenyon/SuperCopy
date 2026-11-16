@@ -1,14 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="540" viewBox="0 0 1440 540" role="img" aria-labelledby="title desc">
-<title id="title">SuperCopy — Keep the good stuff.</title><desc id="desc">Minimal black and icy blue SuperCopy wordmark with the hold, choose, release keyboard gesture.</desc>
-<rect width="1440" height="540" rx="24" fill="#000000"/>
-<g transform="translate(88 70)" fill="none" stroke-width="3"><rect x="0" y="0" width="36" height="42" rx="7" stroke="#a9c7ff"/><rect x="15" y="14" width="36" height="42" rx="7" fill="#000" stroke="#e6e9ef"/></g>
-<text x="160" y="108" fill="#e6e9ef" font-family="-apple-system,BlinkMacSystemFont,Inter,Arial,sans-serif" font-size="32" font-weight="600" letter-spacing="-1">SuperCopy</text>
-<text x="88" y="246" fill="#e6e9ef" font-family="-apple-system,BlinkMacSystemFont,Inter,Arial,sans-serif" font-size="84" font-weight="600" letter-spacing="-4">Keep the good stuff.</text>
-<text x="92" y="300" fill="#8c939f" font-family="-apple-system,BlinkMacSystemFont,Inter,Arial,sans-serif" font-size="25">Your clipboard, remembered. Your Mac, uninterrupted.</text>
-<g font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-size="19">
-<rect x="92" y="383" width="92" height="56" rx="12" fill="#15171c"/><text x="138" y="419" text-anchor="middle" fill="#a9c7ff" font-size="26">⌘ V</text><text x="205" y="418" fill="#c0c5ce">Hold to open</text>
-<rect x="430" y="383" width="60" height="56" rx="12" fill="#15171c"/><text x="460" y="419" text-anchor="middle" fill="#a9c7ff" font-size="26">V</text><text x="511" y="418" fill="#c0c5ce">Tap to choose</text>
-<rect x="754" y="383" width="60" height="56" rx="12" fill="#15171c"/><text x="784" y="419" text-anchor="middle" fill="#a9c7ff" font-size="26">⌘</text><text x="835" y="418" fill="#c0c5ce">Release to paste</text>
-</g>
-<text x="1350" y="481" text-anchor="end" fill="#646d7c" font-family="Menlo,monospace" font-size="14" letter-spacing="2">NATIVE. LOCAL. YOURS.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="480" viewBox="0 0 1440 480" role="img" aria-labelledby="title desc">
+  <title id="title">SuperCopy — One shortcut. A whole clipboard.</title>
+  <desc id="desc">SuperCopy's black and icy-blue wordmark, with three keys explaining hold to open, tap to choose, release to paste.</desc>
+  <rect width="1440" height="480" rx="24" fill="#000000"/>
+  <g transform="translate(84 54)" fill="none" stroke-width="3">
+    <rect width="32" height="38" rx="6" stroke="#A9C7FF"/>
+    <rect x="13" y="12" width="32" height="38" rx="6" fill="#000000" stroke="#E6E9EF"/>
+  </g>
+  <g font-family="-apple-system,BlinkMacSystemFont,Inter,Arial,sans-serif">
+    <text x="150" y="88" font-size="29" font-weight="600" letter-spacing="-1" fill="#E6E9EF">SuperCopy</text>
+    <text x="84" y="216" font-size="68" font-weight="600" letter-spacing="-3" fill="#E6E9EF">One shortcut.</text>
+    <text x="84" y="294" font-size="68" font-weight="600" letter-spacing="-3" fill="#A9C7FF">A whole clipboard.</text>
+    <text x="88" y="354" font-size="21" fill="#8C939F">Copy freely. Find it locally. Stay in your flow.</text>
+    <text x="88" y="426" font-family="Menlo,monospace" font-size="12" letter-spacing="2" fill="#646D7C">BUILT FOR MACOS · NO ACCOUNT · NO CLOUD</text>
+    <g transform="translate(920 135)">
+      <text x="0" y="0" font-family="Menlo,monospace" font-size="11" letter-spacing="2" fill="#646D7C">A BETTER WAY TO PASTE</text>
+      <rect x="0" y="34" width="76" height="52" rx="10" fill="#15171C"/>
+      <text x="38" y="69" text-anchor="middle" font-size="25" fill="#A9C7FF">⌘ V</text>
+      <text x="100" y="66" font-size="18" fill="#E6E9EF">Hold to open</text>
+      <rect x="0" y="110" width="76" height="52" rx="10" fill="#15171C"/>
+      <text x="38" y="145" text-anchor="middle" font-size="25" fill="#A9C7FF">V</text>
+      <text x="100" y="142" font-size="18" fill="#E6E9EF">Tap to choose</text>
+      <rect x="0" y="186" width="76" height="52" rx="10" fill="#15171C"/>
+      <text x="38" y="221" text-anchor="middle" font-size="25" fill="#A9C7FF">⌘</text>
+      <text x="100" y="218" font-size="18" fill="#E6E9EF">Release to paste</text>
+    </g>
+  </g>
 </svg>
