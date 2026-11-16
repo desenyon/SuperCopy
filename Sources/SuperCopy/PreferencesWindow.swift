@@ -90,7 +90,14 @@ final class PreferencesWindow: NSObject, NSTextFieldDelegate {
         excluded.delegate = self
         excluded.setAccessibilityLabel("Apps to ignore, as comma separated bundle IDs")
         content.addSubview(excluded)
-        label("Everything stays on this Mac.", y: 478, size: 11.5, color: Appearance.muted)
+        label("Everything stays on this Mac.", y: 478, width: 230, size: 11.5, color: Appearance.muted)
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        let versionText = version.map { "Version " + $0 + (build.map { " (" + $0 + ")" } ?? "") } ?? "Development build"
+        let versionLabel = label(versionText, x: margin + 230, y: 478, width: inner - 230, size: 11.5, color: Appearance.muted)
+        versionLabel.alignment = .right
+        versionLabel.setAccessibilityIdentifier("app-version")
+        versionLabel.setAccessibilityLabel("SuperCopy " + versionText)
         window.initialFirstResponder = permission
     }
     func show(status message: String) {
