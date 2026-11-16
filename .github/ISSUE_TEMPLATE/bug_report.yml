@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible problem without sharing clipboard contents.
+body:
+  - type: markdown
+    attributes:
+      value: Please use sample text. Never attach your history database, passwords, or private clipboard contents.
+  - type: input
+    id: environment
+    attributes:
+      label: macOS and SuperCopy version
+      placeholder: macOS 15.7, SuperCopy 1.0.1, Apple Silicon
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: Destination app and field
+      placeholder: Safari — a textarea on the compatibility fixture
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps, expected result, and actual result
+      description: Include whether quick paste, cycling, search, or normal paste fails, and whether Accessibility is enabled.
+    validations:
+      required: true

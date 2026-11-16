@@ -1,0 +1,36 @@
+name: macOS
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    name: Test and package
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Unit and offscreen integration tests
+        run: ./scripts/test.sh
+      - name: Universal release bundle
+        run: ./scripts/build.sh --universal --ad-hoc
+      - name: Check both architectures and bundle
+        run: |
+          lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch arm64
+          lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch x86_64
+          codesign --verify --strict dist/SuperCopy.app
+          plutil -lint dist/SuperCopy.app/Contents/Resources/PrivacyInfo.xcprivacy
+      - name: Archive development build
+        run: ditto -c -k --keepParent dist/SuperCopy.app dist/SuperCopy-development.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SuperCopy-development-universal
+          path: dist/SuperCopy-development.zip
+          retention-days: 14

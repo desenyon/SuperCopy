@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SuperCopy · Paste compatibility</title>
+<style>
+:root{color-scheme:dark;font:15px/1.6 -apple-system,BlinkMacSystemFont,sans-serif;background:#08090b;color:#e6e9ef}body{max-width:760px;margin:64px auto;padding:0 24px}h1{font-size:32px;letter-spacing:-1px;margin:0 0 10px}p{color:#a0a5af}label{display:block;color:#a9c7ff;margin:24px 0 8px}input,textarea,[contenteditable],iframe{display:block;box-sizing:border-box;width:100%;padding:14px;background:#15171b;color:#e6e9ef;border:1px solid #343841;border-radius:10px;font:inherit;outline-offset:4px}textarea{min-height:90px}code{color:#a9c7ff}iframe{height:110px;padding:0}output{display:block;font:12px/1.5 monospace;color:#969ca8;margin-top:24px;white-space:pre-wrap}
+</style>
+<h1>One paste. Every field.</h1>
+<p>A local compatibility fixture, not a compatibility guarantee. Copy harmless sample text and try quick paste, cycling, search, and cancellation in each field. No clipboard content is logged; only paste-event counts appear below.</p>
+<label for="text">Text input</label><input id="text" autocomplete="off" placeholder="Paste sample text">
+<label for="area">Textarea</label><textarea id="area" placeholder="Multiline text"></textarea>
+<label for="rich">Rich editable content</label><div id="rich" contenteditable="true" role="textbox" aria-label="Rich editable content"><b>Rich text</b> — place your caret here.</div>
+<label>Shadow DOM input</label><div id="shadow"></div>
+<label for="frame">Iframe input</label><iframe id="frame" title="Iframe paste target" srcdoc="<!doctype html><html lang='en'><meta charset='utf-8'><style>body{background:#15171b;padding:12px}input{box-sizing:border-box;width:100%;padding:12px;background:#08090b;color:#e6e9ef;border:1px solid #343841;border-radius:8px;font:15px sans-serif}</style><input aria-label='Iframe input' placeholder='Paste inside iframe'></html>"></iframe>
+<label for="readonly">Read-only control (paste should be rejected)</label><input id="readonly" readonly value="This field cannot be edited.">
+<output id="events" aria-live="polite">Paste events: 0</output>
+<script>
+const shadow=document.querySelector('#shadow').attachShadow({mode:'open'});
+shadow.innerHTML='<style>input{box-sizing:border-box;width:100%;padding:14px;background:#15171b;color:#e6e9ef;border:1px solid #343841;border-radius:10px;font:15px sans-serif}</style><input aria-label="Shadow DOM input" placeholder="Paste in shadow DOM">';
+let count=0;const log=()=>{document.querySelector('#events').textContent='Paste events: '+(++count)+' (content is never logged)'};
+document.addEventListener('paste',log);document.querySelector('#frame').addEventListener('load',e=>{e.target.contentDocument.addEventListener('paste',log)});
+</script>
+</html>

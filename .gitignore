@@ -1,0 +1,16 @@
+.build/
+dist/
+.DS_Store
+*.xcuserstate
+.swiftpm/
+DerivedData/
+*.dSYM/
+*.xcarchive/
+*.p12
+*.p8
+*.pem
+*.key
+.env
+.env.*
+# Existing workstation-specific diagnostic dumps stay local.
+docs/verification/
