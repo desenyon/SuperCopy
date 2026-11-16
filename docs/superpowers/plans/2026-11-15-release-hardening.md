@@ -8,4 +8,4 @@ Goal: preserve the requested hold-Command/V gesture, improve delivery across app
 4. Run unit and integration checks, release build, layout rendering, and leak checks. Install the verified local build without opening Settings or taking focus.
 5. Add README artwork based on real offscreen fixtures, privacy/security/contribution docs, compatibility fixtures, CI, and release instructions. Audit tracked content before creating and pushing GitHub.
 
-App Store scope: the global interception/automatic-paste design conflicts with mandatory sandboxing. Await the user's release-channel preference; never label an unsandboxed bundle App Store ready. Full Xcode is not installed on this Mac.
+Distribution decision: the user selected direct DMG distribution. Preserve the global interception/automatic-paste interaction, package a universal drag-to-Applications installer, and require Developer ID signing/notarization for public downloads. Full Xcode is not installed on this Mac.

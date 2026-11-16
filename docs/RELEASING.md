@@ -1,48 +1,73 @@
-# Release preparation
+# DMG distribution
 
-## Current status
+SuperCopy ships directly as a drag-to-Applications **DMG**, preserving its full global ⌘V interaction. The app remains unsandboxed and requires Accessibility permission. It does not use the Mac App Store.
 
-The full SuperCopy interaction is an **unsandboxed, direct-distribution app**. The repository includes source builds, a privacy manifest, CI packaging, and local verification. This is not a Mac App Store submission archive or an approved store release.
+## Local development images
 
-[Apple's review rule 2.4.5](https://developer.apple.com/app-store/review/guidelines/#hardware-compatibility) requires Mac App Store apps to be sandboxed. Apple's [accessibility documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Accessibility/cocoaAXIntro/cocoaAXintro.html) states that an app controlling another app cannot be sandboxed. SuperCopy's active global event tap and injected paste therefore need a different distribution route, or a separate product interaction. Adding an entitlement file would not resolve this conflict.
-
-A store edition would need an explicit redesign: a sandboxed picker that copies the chosen item, followed by the user's own paste. It would also need file-access validation inside the sandbox, an Xcode application archive, distribution provisioning, App Store Connect metadata, a hosted privacy-policy URL, screenshots, age-rating/export-compliance answers, TestFlight/clean-install testing, and App Review. None of that is represented as completed here. Only Command Line Tools, rather than full Xcode, were available on the development Mac.
-
-## Local use
+On macOS with Swift 6 and [uv](https://docs.astral.sh/uv/) installed:
 
 ```sh
 ./scripts/test.sh
+./scripts/package-dmg.sh --universal
+```
+
+Output:
+
+```text
+dist/SuperCopy-1.0.1-universal-development.dmg
+dist/SuperCopy-1.0.1-universal-development.dmg.sha256
+```
+
+The version is read from `Resources/Info.plist`; single-architecture builds use their architecture in the filename. The package includes SuperCopy.app, an Applications shortcut, and hidden Finder layout/background assets. It needs no privileged installer, scripts running on the recipient's machine, or internet connection to install.
+
+Packaging uses Apple's `hdiutil`, Swift/AppKit to draw the background, and pinned `ds-store`/`mac-alias` Python tooling through `uv` to write Finder metadata. These are packaging tools only, never bundled app dependencies. The script mounts images with `-nobrowse -noautoopen`; it does not drive Finder or take desktop focus.
+
+Before reporting success, the script verifies the compressed image, mounts it read-only, verifies the app's signature, checks the Applications shortcut, and compares the packaged executable with the source bundle. It detaches temporary mounts on completion or failure, then emits a checksum. Existing output is replaced only after the new image passes these checks.
+
+Local builds use a stable self-signed development identity. CI uses `--ad-hoc` and uploads development DMGs and checksums as workflow artifacts. Neither is an Apple-notarized public download. Do not remove quarantine as a substitute for release verification.
+
+## Install
+
+Open the DMG, drag SuperCopy into Applications, eject the image, then open SuperCopy from Applications. In the menu bar, open **Settings → Enable** and grant Accessibility. Do not run it directly from the mounted image. Quit an older running copy before replacing it; history and preferences remain outside the app bundle.
+
+For a local source install without a DMG:
+
+```sh
 ./scripts/build.sh --install
 ```
 
-Local builds use a stable self-signed identity to avoid resetting Accessibility on each build. The identity is not an Apple distribution certificate. Installation stages the replacement before stopping the old app, and relaunches in the background. It does not reset permissions or open Settings. If permission is missing, open SuperCopy's Settings yourself and enable Accessibility.
+This stages the replacement first and relaunches in the background. It does not reset permissions or open Settings.
 
-## Direct distribution
+## Public downloads
 
-1. Run tests and the [compatibility checklist](COMPATIBILITY.md) on supported macOS versions, both CPU architectures, and a clean user account.
-2. Build a universal binary with the distributor's own Developer ID:
+Public DMGs need your own **Developer ID Application** certificate and an existing notarization keychain profile. They do not need App Store sandboxing or review. The `--notarize` option refuses ad-hoc and local self-signed identities.
 
-   ```sh
-   SUPERCOPY_SIGNING_IDENTITY='Developer ID Application: Your Name (TEAMID)' ./scripts/build.sh --universal
-   lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch arm64
-   lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch x86_64
-   codesign --verify --strict --verbose=2 dist/SuperCopy.app
-   ```
+```sh
+SUPERCOPY_SIGNING_IDENTITY='Developer ID Application: Your Name (TEAMID)' \
+  ./scripts/package-dmg.sh --universal --notarize 'supercopy-notary'
+```
 
-3. Notarize using an already configured keychain profile, then staple and package:
+The script:
 
-   ```sh
-   ditto -c -k --keepParent dist/SuperCopy.app dist/SuperCopy-submission.zip
-   xcrun notarytool submit dist/SuperCopy-submission.zip --keychain-profile 'supercopy-notary' --wait
-   xcrun stapler staple dist/SuperCopy.app
-   xcrun stapler validate dist/SuperCopy.app
-   spctl --assess --type execute --verbose=2 dist/SuperCopy.app
-   ditto -c -k --keepParent dist/SuperCopy.app dist/SuperCopy.zip
-   shasum -a 256 dist/SuperCopy.zip
-   ```
+1. Builds and signs the app with hardened runtime.
+2. Submits the app to Apple's notary service and staples/validates its ticket.
+3. Assesses the stapled app with Gatekeeper.
+4. Builds the DMG containing that stapled app and signs the image.
+5. Submits the DMG, staples/validates its ticket, and performs package integrity checks.
+6. Emits the final DMG and SHA-256 file after stapling.
 
-4. Verify the final downloaded archive on a clean machine before attaching it to a release. Do not remove quarantine as a substitute for Gatekeeper verification.
+Signing credentials belong in Keychain or CI secrets, never in source control. CI does not publish consumer downloads automatically. A supplied Developer ID without `--notarize` can produce a signed image, but that image has not completed the notarization release gate.
 
-The build script enables hardened runtime and verifies the signature. Signing/notarization credentials belong in the macOS keychain or a CI secret store, never the repository. CI uses `--ad-hoc` and uploads clearly named development artifacts; it does not publish a consumer release automatically.
+Verify both CPU slices and the final download:
 
-The privacy manifest includes app preferences (`CA92.1`), app/copied-file timestamps (`C617.1`, `3B52.1`), and elapsed-time timers (`35F9.1`). Review these against the exact release's API usage and [Apple's current required-reason definitions](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api) before submitting any future store variant.
+```sh
+lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch arm64
+lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch x86_64
+xcrun stapler validate dist/SuperCopy-1.0.1-universal.dmg
+spctl --assess --type open --context context:primary-signature --verbose=2 dist/SuperCopy-1.0.1-universal.dmg
+(cd dist && shasum -a 256 -c SuperCopy-1.0.1-universal.dmg.sha256)
+```
+
+Run the [compatibility checklist](COMPATIBILITY.md), test on supported macOS releases and both architectures, and install the actual downloaded DMG on a clean machine before publishing. Live field compatibility, login launch, upgrades, offline ticket behavior, and quarantined-download Gatekeeper assessment remain release checks. A DMG is a delivery format, not evidence those checks passed.
+
+The bundled privacy manifest covers app preferences, file timestamps, and elapsed-time timers. Review it against the actual submitted binary whenever API usage changes.

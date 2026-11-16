@@ -43,7 +43,7 @@ These figures are one local run and do not establish behavior for millions of en
 - Intel runtime testing and supported older macOS versions; a cross-compiled slice is not a runtime test.
 - Visible material, animation, focus, keyboard-layout, and secure-input transitions.
 - Developer ID notarization/stapling and Gatekeeper verification for public binary distribution.
-- A separate sandbox-compatible interaction and submission pipeline for any Mac App Store edition. See [Releasing](RELEASING.md).
+- Final signed/notarized DMG download checks for direct distribution. See [Releasing](RELEASING.md).
 
 The installed Command Line Tools linker reports missing optional developer-library search paths and an Intel architecture deprecation warning for its SDK. The executable load commands were separately checked and still specify macOS 14.0. Successful local builds do not resolve the pending cross-version checks.
 
@@ -65,3 +65,11 @@ leaks --atExit -- "$debug_dir/SuperCopy" --render-fixtures /tmp/SuperCopy-layout
 ```
 
 Use the debug executable for the UI leak scan: the hardened release's runtime can prevent the allocation instrumentation from loading. A command exiting successfully without an actual `leaks` report is not evidence of zero leaks. Workstation-specific diagnostic dumps stay local; screenshots in the README contain fixture data only.
+
+## DMG packaging update
+
+Direct DMG distribution replaces the proposed App Store route. `scripts/package-dmg.sh --universal` produced `SuperCopy-1.0.1-universal-development.dmg` and a matching SHA-256 file. The compressed image passed `hdiutil verify`; its read-only mount contained the signed app, correct Applications symlink, Finder layout, and background. A copy taken from the mounted image into a temporary Applications directory passed strict code-signature checks, both architecture checks, and all 61 app self-test assertions. The 23 core unit tests also passed after the diagnostics entry-point rename.
+
+The installer background was rendered and inspected; the full Finder window was not opened, preserving the no-desktop-interruption requirement. Notarization, Developer ID signing, and quarantined clean-machine Gatekeeper checks were not performed. The optional `--notarize` path requires the distributor's credentials and remains unexercised here.
+
+The first GitHub universal build exposed an Xcode `@main`/`main.swift` naming conflict in the diagnostics target. Renaming that entry point to `Diagnostics.swift` resolves the conflicting file convention. This is separate from app behavior; the local universal build passed after the rename.

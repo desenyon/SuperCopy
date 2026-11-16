@@ -39,7 +39,9 @@
 
 ### Get started
 
-Requires macOS 14 or later and a Swift 6 toolchain. Install Apple's Command Line Tools with `xcode-select --install` if needed.
+SuperCopy is distributed directly as a **DMG**. Open the image, drag SuperCopy to Applications, eject the image, then open SuperCopy from Applications. Development images are not notarized; the public-release requirements are in [Releasing](docs/RELEASING.md).
+
+Building from source requires macOS 14 or later and a Swift 6 toolchain. Install Apple's Command Line Tools with `xcode-select --install` if needed.
 
 ```sh
 git clone https://github.com/desenyon/SuperCopy.git
@@ -49,13 +51,16 @@ cd SuperCopy
 
 Open **SuperCopy → Settings → Enable**, then allow SuperCopy under **System Settings → Privacy & Security → Accessibility**. The app detects changes automatically. The build installs and launches in the background; there is no Dock icon. Launch at login is optional.
 
-For a universal Apple Silicon + Intel bundle:
+To build a universal Apple Silicon + Intel drag-to-Applications installer:
 
 ```sh
-./scripts/build.sh --universal
+brew install uv  # packaging tools only; not an app dependency
+./scripts/package-dmg.sh --universal
 ```
 
-Local builds use a stable, self-signed development identity. They are for personal use, and are not Apple-notarized downloads. CI artifacts are ad-hoc-signed development builds. For public distribution, follow [Releasing](docs/RELEASING.md).
+The DMG and its SHA-256 checksum are written to `dist/`. The installer has a minimal black background and a direct Applications shortcut. [Signed and notarized packaging](docs/RELEASING.md#public-downloads).
+
+Local builds use a stable, self-signed development identity. They are for personal use, and are not Apple-notarized downloads. CI artifacts contain ad-hoc-signed development DMGs. For public distribution, follow [Releasing](docs/RELEASING.md).
 
 ### The gesture
 
@@ -104,7 +109,7 @@ dist/SuperCopy.app/Contents/MacOS/SuperCopy --render-fixtures /tmp/SuperCopy-lay
 
 ### Distribution status
 
-The complete ⌘V interaction currently requires an **unsandboxed app**. The Mac App Store requires sandboxing, so this build is **not App Store ready**. A store edition would need a different paste interaction and its own validation. The repository includes the [release checklist and exact blockers](docs/RELEASING.md); Developer ID signing, notarization, and live compatibility testing remain gates for public binary distribution.
+SuperCopy uses **direct DMG distribution**, preserving the complete ⌘V interaction. Local and CI development images are explicitly named `-development.dmg`. Public downloads need Developer ID signing, notarization, and clean-machine compatibility checks. The [release guide](docs/RELEASING.md) covers those steps; no App Store edition is planned in this distribution workflow.
 
 ---
 
