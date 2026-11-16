@@ -14,8 +14,8 @@ On macOS with Swift 6 and [uv](https://docs.astral.sh/uv/) installed:
 Output:
 
 ```text
-dist/SuperCopy-1.0.1-universal-development.dmg
-dist/SuperCopy-1.0.1-universal-development.dmg.sha256
+dist/SuperCopy-0.0.1-universal-development.dmg
+dist/SuperCopy-0.0.1-universal-development.dmg.sha256
 ```
 
 The version is read from `Resources/Info.plist`; single-architecture builds use their architecture in the filename. The package includes SuperCopy.app, an Applications shortcut, and hidden Finder layout/background assets. It needs no privileged installer, scripts running on the recipient's machine, or internet connection to install.
@@ -37,6 +37,27 @@ For a local source install without a DMG:
 ```
 
 This stages the replacement first and relaunches in the background. It does not reset permissions or open Settings.
+
+## Get a Developer ID signing identity
+
+1. Enroll in the [Apple Developer Program](https://developer.apple.com/programs/). Membership is US$99 per year, or the local equivalent. A free developer account does not provide Developer ID distribution certificates.
+2. On the Mac that will sign releases, open **Keychain Access → Certificate Assistant → Request a Certificate From a Certificate Authority…**. Enter your email and name, choose **Saved to disk**, and save the certificate signing request. The private key stays in this Mac's keychain.
+3. As the account holder, open [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/certificates/list), choose **Certificates → + → Developer ID Application**, and upload that request. Download the certificate and open it to install it in the same Mac's keychain. [Apple's complete certificate instructions](https://developer.apple.com/help/account/certificates/create-developer-id-certificates/).
+4. Confirm the identity is available:
+
+   ```sh
+   security find-identity -v -p codesigning
+   ```
+
+   It should list an identity named `Developer ID Application: Your Name (TEAMID)`. Use that exact name as `SUPERCOPY_SIGNING_IDENTITY`.
+
+The Developer ID Application certificate signs SuperCopy and its DMG. Notarization is a separate step: create an app-specific password for your Apple Account, then save notarization credentials interactively in Keychain:
+
+```sh
+xcrun notarytool store-credentials 'supercopy-notary'
+```
+
+Follow the prompts for Apple Account, team ID, and app-specific password. Do not put those credentials or signing keys in Git. See [Apple's notarization guide](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution).
 
 ## Public downloads
 
@@ -63,9 +84,9 @@ Verify both CPU slices and the final download:
 ```sh
 lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch arm64
 lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch x86_64
-xcrun stapler validate dist/SuperCopy-1.0.1-universal.dmg
-spctl --assess --type open --context context:primary-signature --verbose=2 dist/SuperCopy-1.0.1-universal.dmg
-(cd dist && shasum -a 256 -c SuperCopy-1.0.1-universal.dmg.sha256)
+xcrun stapler validate dist/SuperCopy-0.0.1-universal.dmg
+spctl --assess --type open --context context:primary-signature --verbose=2 dist/SuperCopy-0.0.1-universal.dmg
+(cd dist && shasum -a 256 -c SuperCopy-0.0.1-universal.dmg.sha256)
 ```
 
 Run the [compatibility checklist](COMPATIBILITY.md), test on supported macOS releases and both architectures, and install the actual downloaded DMG on a clean machine before publishing. Live field compatibility, login launch, upgrades, offline ticket behavior, and quarantined-download Gatekeeper assessment remain release checks. A DMG is a delivery format, not evidence those checks passed.
