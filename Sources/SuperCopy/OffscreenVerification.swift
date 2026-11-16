@@ -11,6 +11,7 @@ enum OffscreenVerification {
         let preferences = PreferencesWindow()
         try render(preferences.window.contentView!, to: directory.appendingPathComponent("settings.png"))
         let panel = HistoryPanel()
+        panel.headless = true
         let now = Date()
         let icon = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Resources/AppIcon.icns")
         let iconPreview = directory.appendingPathComponent("icon-preview.png")
@@ -31,7 +32,9 @@ enum OffscreenVerification {
             ("let history = await clipboard.search(query)", "let history = await clipboard.search(query)", .text, "Xcode", nil),
             ("Interview recording.m4a", "Interview recording.m4a", .audio, "Finder", nil),
             ("https://developer.apple.com/design/", "https://developer.apple.com/design/", .text, "Safari", nil),
-            ("Launch checklist", "Polish the details. Test the edges.", .text, "Notes", nil)
+            ("Launch checklist", "Polish the details. Test the edges.", .text, "Notes", nil),
+            ("Clipboard history, without the clutter.", "Clipboard history, without the clutter.", .text, "Notes", nil),
+            ("Design notes — clipboard history", "A compact picker for clipboard history.", .text, "TextEdit", nil)
         ]
         let items = samples.enumerated().map { index, sample in
             PanelItem(entry: HistoryEntry(id: "fixture-\(index)", title: sample.0, text: sample.1, kind: sample.2,
@@ -42,6 +45,13 @@ enum OffscreenVerification {
         // Give queued thumbnail decoding a chance to complete without showing a window.
         RunLoop.current.run(until: Date().addingTimeInterval(0.3))
         try render(panel.panel.contentView!, to: directory.appendingPathComponent("clipboard.png"))
+        // A second real panel state for repository documentation, without taking focus.
+        panel.type("history")
+        panel.setItems(items.filter { item in
+            (item.entry?.text.lowercased().contains("history") ?? false)
+                || HistoryPanel.title(for: item).lowercased().contains("history")
+        })
+        try render(panel.panel.contentView!, to: directory.appendingPathComponent("search.png"))
         for _ in 0..<300 {
             weak var releasedPanel: HistoryPanel?
             weak var releasedWindow: NSWindow?
