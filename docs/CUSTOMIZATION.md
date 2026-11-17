@@ -6,6 +6,7 @@ Open the menu-bar icon → **Settings…**. These controls are already available
 | --- | --- |
 | Launch at login | Start SuperCopy when you sign in, or leave launch manual. Off until you enable it. |
 | History size | Choose 1, 5, 10, or 50 GiB, or Unlimited. The default is 10 GiB. The app labels these options GB. |
+| Save temporary text | Allow temporary plain/rich/HTML text used by dictation apps. Off by default; concealed/password markers and temporary non-text formats stay excluded. |
 | Ignore copies from | Enter source-app bundle IDs, separated by commas. Excluded copies are not saved. |
 | Accessibility | Enable global ⌘V history and automatic paste in macOS System Settings. |
 
@@ -26,6 +27,12 @@ For multiple apps, separate IDs with commas. Use the actual installed applicatio
 Finish editing the field by pressing Tab or clicking another control. Exclusions use the frontmost app at capture time. They are not a retroactive history filter, and background/automated copies may have a different apparent source. Delete existing entries or clear history separately if needed.
 
 Clipboard content marked sensitive or concealed is skipped automatically. Unmarked passwords can still be captured, so exclude private apps or pause history when appropriate.
+
+## Capture Granola dictation
+
+Granola can publish dictated text with `org.nspasteboard.TransientType`. SuperCopy normally honors this marker by not saving it. Turn on **Save temporary text** to retain those dictations. Changing this setting retries the current clipboard, so you do not need to dictate it again if the content is still available.
+
+This is a clipboard-format setting, not a Granola-only exception: other apps' temporary text is included too. Text with concealed/password-manager markers is still blocked. Temporary files, images, and unknown data formats remain blocked. Unmarked passwords can still be captured, as with ordinary clipboard text.
 
 ## Set a storage budget
 
