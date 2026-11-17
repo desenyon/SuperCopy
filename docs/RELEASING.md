@@ -14,8 +14,8 @@ On macOS with Swift 6 and [uv](https://docs.astral.sh/uv/) installed:
 Output:
 
 ```text
-dist/SuperCopy-0.0.1-universal-development.dmg
-dist/SuperCopy-0.0.1-universal-development.dmg.sha256
+dist/SuperCopy-0.0.2-universal-development.dmg
+dist/SuperCopy-0.0.2-universal-development.dmg.sha256
 ```
 
 The version is read from `Resources/Info.plist`; single-architecture builds use their architecture in the filename. The package includes SuperCopy.app, an Applications shortcut, and hidden Finder layout/background assets. It needs no privileged installer, scripts running on the recipient's machine, or internet connection to install.
@@ -84,9 +84,9 @@ Verify both CPU slices and the final download:
 ```sh
 lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch arm64
 lipo dist/SuperCopy.app/Contents/MacOS/SuperCopy -verify_arch x86_64
-xcrun stapler validate dist/SuperCopy-0.0.1-universal.dmg
-spctl --assess --type open --context context:primary-signature --verbose=2 dist/SuperCopy-0.0.1-universal.dmg
-(cd dist && shasum -a 256 -c SuperCopy-0.0.1-universal.dmg.sha256)
+xcrun stapler validate dist/SuperCopy-0.0.2-universal.dmg
+spctl --assess --type open --context context:primary-signature --verbose=2 dist/SuperCopy-0.0.2-universal.dmg
+(cd dist && shasum -a 256 -c SuperCopy-0.0.2-universal.dmg.sha256)
 ```
 
 Run the [compatibility checklist](COMPATIBILITY.md), test on supported macOS releases and both architectures, and install the actual downloaded DMG on a clean machine before publishing. Live field compatibility, login launch, upgrades, offline ticket behavior, and quarantined-download Gatekeeper assessment remain release checks. A DMG is a delivery format, not evidence those checks passed.
