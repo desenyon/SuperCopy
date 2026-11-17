@@ -40,9 +40,9 @@ public actor HistoryStore {
         }
     }
 
-    @discardableResult public func insert(_ snapshot: ClipboardSnapshot) throws -> String? {
+    @discardableResult public func insert(_ snapshot: ClipboardSnapshot, captureTemporaryText: Bool = false) throws -> String? {
         guard !snapshot.items.isEmpty else { return nil }
-        guard !snapshot.items.contains(where: { CapturePolicy.shouldIgnore(types: $0.representations.map(\.type)) }) else { return nil }
+        guard !snapshot.items.contains(where: { CapturePolicy.shouldIgnore(types: $0.representations.map(\.type), captureTemporaryText: captureTemporaryText) }) else { return nil }
         guard snapshot.byteCount <= CapturePolicy.maxPasteboardBytes else { throw HistoryError.tooLarge }
         guard snapshot.items.allSatisfy({ !$0.representations.isEmpty }) else { throw HistoryError.invalidPayload }
         var fingerprint = snapshot.fingerprint
