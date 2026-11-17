@@ -62,6 +62,7 @@ Open the menu-bar icon → **Settings…** to choose what SuperCopy keeps and wh
 | --- | --- |
 | Start when you sign in | Enable **Launch at login** |
 | Keep a smaller or larger archive | Choose **1, 5, 10, or 50 GB**, or **Unlimited**; default **10 GB** |
+| Keep Granola and other temporary dictation text | Opt in to **Save temporary text**; concealed/password-marked and temporary non-text content stays excluded |
 | Leave private apps out | Enter comma-separated bundle IDs in **Ignore copies from** |
 | Take a break from capture | Choose **Pause history** in the menu bar |
 | Reduce motion or transparency | Use macOS **Accessibility → Display**; SuperCopy follows both settings |
