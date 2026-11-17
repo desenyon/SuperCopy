@@ -81,3 +81,13 @@ The first tagged release uses version **0.0.1**, build **3**. Settings now deriv
 Fresh validation: 23 unit tests passed, all 61 offscreen app assertions passed in both the debug and packaged release executables, and the universal DMG passed compressed-image integrity, read-only mount, executable comparison, and signature checks. A copy taken from the DMG was checked for matching version/build metadata and both CPU slices.
 
 The download uses the local `SuperCopy Local Signing` development certificate and has **not** been Apple Developer ID signed or notarized. It is published as a GitHub development prerelease. This does not establish clean-machine Gatekeeper acceptance or new live external-text-field coverage.
+
+## 0.0.2 capture fixes · November 17, 2026
+
+A user-supplied Granola sample was inspected for format names only. It contained `org.nspasteboard.TransientType`, text/HTML and Chromium provenance formats. No sample text was inspected or logged. This explains why 0.0.1's transient-content rule excluded it. The new **Save temporary text** setting is off by default and permits known temporary text formats only after opt-in; concealed/password-marked and temporary non-text content remain blocked.
+
+Fresh verification passed **30 core tests** and **78 app self-test checks**, including an Address Sanitizer core run. The capture self-test under `leaks --atExit` reported **0 detected leaks / 0 leaked bytes**. Regression fixtures cover generated dictation, transient-text opt-in, temporary/concealed/non-text exclusions, delayed payloads behind ready metadata, initially empty revisions, save failure/recovery, monitor restart, and concealed picker summaries. Failures were reproduced before the corresponding fixes. Test preferences, history and clipboards are isolated from the installed app.
+
+The final universal 0.0.2 bundle (build 4) passed both architecture checks and strict signature verification. Its 78-check self-test passed. The DMG passed image integrity, read-only mount, executable comparison and signature checks, and has a SHA-256 file. The expanded Settings layout was rendered offscreen and inspected, including its temporary-text toggle and version label. The fixture run completed 300 teardown cycles.
+
+Two focused reviews found metadata-only/initial-empty acknowledgement gaps; covering regressions now pass. The update is prepared locally, with release candidates and remaining issues recorded in [the 0.0.2 audit](0.0.2-AUDIT.md). A new actual Granola dictation after enabling the option, live target-app paste, Intel runtime, signing/notarization and clean-machine Gatekeeper acceptance have not been verified by automation.
