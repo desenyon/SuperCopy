@@ -7,11 +7,13 @@ final class PreferencesWindow: NSObject, NSTextFieldDelegate {
     private let excluded = NSTextField(string: "")
     private let storage = NSPopUpButton()
     private let launch = NSSwitch()
+    private let temporaryText = NSSwitch()
     private let permission = QuietButton(title: "Enable", target: nil, action: nil)
     var onPermission: (() -> Void)?
+    var onCapturePolicyChange: (() -> Void)?
     var onBudget: ((Int64) -> Void)?
     override init() {
-        let size = NSSize(width: 460, height: 522)
+        let size = NSSize(width: 460, height: 588)
         window = NSWindow(contentRect: NSRect(origin: .zero, size: size),
                           styleMask: [.titled, .closable, .fullSizeContentView], backing: .buffered, defer: false)
         super.init()
@@ -73,13 +75,20 @@ final class PreferencesWindow: NSObject, NSTextFieldDelegate {
         storage.target = self; storage.action = #selector(storageChanged)
         storage.setAccessibilityLabel("History size")
         content.addSubview(storage)
-        label("Ignore copies from", y: 386)
-        let well = NSView(frame: NSRect(x: margin, y: 414, width: inner, height: 30))
+        label("Save temporary text", y: 386)
+        temporaryText.target = self; temporaryText.action = #selector(temporaryTextChanged)
+        temporaryText.controlSize = .small
+        temporaryText.frame = NSRect(x: size.width - margin - 38, y: 384, width: 38, height: 22)
+        temporaryText.setAccessibilityLabel("Save temporary clipboard text, including dictation")
+        content.addSubview(temporaryText)
+        label("For dictation apps that mark copies as temporary.", y: 410, size: 11.5, color: Appearance.muted)
+        label("Ignore copies from", y: 452)
+        let well = NSView(frame: NSRect(x: margin, y: 480, width: inner, height: 30))
         well.wantsLayer = true
         well.layer?.backgroundColor = NSColor.white.withAlphaComponent(0.045).cgColor
         well.layer?.cornerRadius = 8; well.layer?.cornerCurve = .continuous
         content.addSubview(well)
-        excluded.frame = NSRect(x: margin + 10, y: 420, width: inner - 20, height: 18)
+        excluded.frame = NSRect(x: margin + 10, y: 486, width: inner - 20, height: 18)
         excluded.placeholderAttributedString = NSAttributedString(string: "Bundle IDs, comma separated — e.g. com.apple.keychainaccess", attributes: [
             .foregroundColor: Appearance.muted, .font: NSFont.systemFont(ofSize: 11.5)])
         excluded.font = .systemFont(ofSize: 11.5)
@@ -90,11 +99,11 @@ final class PreferencesWindow: NSObject, NSTextFieldDelegate {
         excluded.delegate = self
         excluded.setAccessibilityLabel("Apps to ignore, as comma separated bundle IDs")
         content.addSubview(excluded)
-        label("Everything stays on this Mac.", y: 478, width: 230, size: 11.5, color: Appearance.muted)
+        label("Everything stays on this Mac.", y: 544, width: 230, size: 11.5, color: Appearance.muted)
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
         let versionText = version.map { "Version " + $0 + (build.map { " (" + $0 + ")" } ?? "") } ?? "Development build"
-        let versionLabel = label(versionText, x: margin + 230, y: 478, width: inner - 230, size: 11.5, color: Appearance.muted)
+        let versionLabel = label(versionText, x: margin + 230, y: 544, width: inner - 230, size: 11.5, color: Appearance.muted)
         versionLabel.alignment = .right
         versionLabel.setAccessibilityIdentifier("app-version")
         versionLabel.setAccessibilityLabel("SuperCopy " + versionText)
@@ -102,6 +111,7 @@ final class PreferencesWindow: NSObject, NSTextFieldDelegate {
     }
     func show(status message: String) {
         updateStatus(message)
+        temporaryText.state = UserDefaults.standard.bool(forKey: "captureTemporaryText") ? .on : .off
         launch.state = SMAppService.mainApp.status == .enabled ? .on : .off
         let budget = UserDefaults.standard.object(forKey: "diskBudgetGiB") as? Int ?? 10
         storage.selectItem(at: [1, 5, 10, 50, 0].firstIndex(of: budget) ?? 2)
@@ -119,6 +129,10 @@ final class PreferencesWindow: NSObject, NSTextFieldDelegate {
         status.toolTip = message
     }
     @objc private func permissionClicked() { onPermission?() }
+    @objc private func temporaryTextChanged() {
+        UserDefaults.standard.set(temporaryText.state == .on, forKey: "captureTemporaryText")
+        onCapturePolicyChange?()
+    }
     @objc private func storageChanged() {
         let value = [1, 5, 10, 50, 0][storage.indexOfSelectedItem]
         UserDefaults.standard.set(value, forKey: "diskBudgetGiB")
